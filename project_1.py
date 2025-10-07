@@ -39,7 +39,7 @@ import csv
 
 DATAFILE = 'penguins.csv'
 
-# Columns of interest
+# List of columns to load and analyze from the penguins dataset
 COLUMNS = [
     'species', 'island', 'bill_length_mm', 'bill_depth_mm',
     'flipper_length_mm', 'body_mass_g', 'sex', 'year'
@@ -48,11 +48,12 @@ COLUMNS = [
 
 def get_header(filepath=DATAFILE):
     """Return the CSV header as a list of column names."""
-    with open(filepath, 'r') as f:
-        reader = csv.reader(f)
-        header = next(reader)
-    # Remove first column if it's empty or unnamed
-    if header and (header[0] == '' or header[0].lower().startswith('unnamed')):
+    file = open(filepath, 'r')
+    reader = csv.reader(file)
+    header = next(reader)
+    file.close()
+    # Remove first column if it's empty
+    if header and (header[0] == ''):
         header = header[1:]
     return header
 
@@ -71,44 +72,45 @@ def load_data(filepath: str = DATAFILE):
     return {'records': [], 'by_index': {}, 'by_species': {}}
 
 
-def count_by_species(records):
-    """Step 1: Count records grouped by species.
+def avg_bill_length_by_species(records):
+    """Step 1: Compute average bill length (mm) grouped by species.
 
     Args:
         records: list of dicts
     Returns:
-        dict: {species: count}
+        dict: {species: average_bill_length_mm}
 
     (To be called by analyze() once implemented)
     """
     pass
 
 
-def count_by_island(records):
-    """Step 2: Count records grouped by island.
+def count_sex_by_species(records):
+    """Step 2: Count male and female records for each species.
 
     Args:
         records: list of dicts
     Returns:
-        dict: {island: count}
+        dict: {species: {'male': count, 'female': count}}
 
-    (To be called by analyze() once implemented)
+    Iterates through the records, grouping by species and counting
+    the number of 'male' and 'female' entries for each species.
     """
     pass
 
 
 
 def analyze(records):
-    """Perform the main analyses: count by species and island."""
-    species_counts = count_by_species(records)
-    island_counts = count_by_island(records)
+    """Perform analyses: count sex by species and average bill length by species."""
+    sex_species_counts = count_sex_by_species(records)
+    avg_bill_length = avg_bill_length_by_species(records)
     return {
-        'species_counts': species_counts,
-        'island_counts': island_counts
+        'sex_by_species': sex_species_counts,
+        'avg_bill_length_by_species': avg_bill_length
     }
 
 
-def main() -> None:
+def main():
     header = get_header()
     print('Detected header:')
     print(header)
