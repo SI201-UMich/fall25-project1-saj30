@@ -24,15 +24,20 @@ Planned analyses:
 Function structure:
 
 main()
-  - get_header(filepath): Reads and returns CSV column names
-  - load_data(filepath): Loads CSV into records, cleans numeric fields, builds:
-      - records (list of dicts)
-      - by_index (dict)
-      - by_species (dict)
-  - analyze()
-      - count_by_species()
-      - count_by_island()
-      - summary_stats_by_species()
+  - load_data(filepath)
+      - Reads CSV file manually using csv.reader
+      - Cleans data (removes index column, trims spaces)
+      - Builds and returns:
+          - header (list of column names)
+          - records (list of dicts)
+          - by_index (dict[int, dict])
+          - by_species (dict[str, list[dict]])
+  - analyze(records)
+      - avg_bill_length_by_species(records)
+          - Calculates average bill length per species
+      - count_sex_by_species(records)
+          - Counts number of males and females per species
+  - Prints results from analyze()
 """
 
 import csv
@@ -46,10 +51,12 @@ COLUMNS = [
 
 
 def load_data(filepath: str = DATAFILE):
-    """Load the CSV into a structured dictionary and return header."""
+    """Load the CSV into a structured dictionary and return header (manual version)."""
     with open(filepath, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         header = next(reader)
+
+        # If the first column is just an empty string (like ""), skip it.
         if header and header[0] == '':
             header = header[1:]
 
@@ -59,20 +66,36 @@ def load_data(filepath: str = DATAFILE):
 
         count = 0
         for row in reader:
+            # Skip the first element if it's just the index number
+            if row and row[0].isdigit():
+                row = row[1:]
+
+            # Stop if row is shorter than expected (to avoid index errors)
+            if len(row) < len(header):
+                continue
+
+            # Build a dictionary manually: {header[i]: row[i]}
             record = {}
             for i in range(len(header)):
-                record[header[i]] = row[i] if i < len(row) else ''
+                record[header[i]] = row[i].strip()
+
+            # Add record to collections
             records.append(record)
             by_index[count] = record
-            species = record.get('species')
+
+            species = record.get('species', '').strip()
             if species:
                 if species not in by_species:
                     by_species[species] = []
                 by_species[species].append(record)
+
             count += 1
 
+        # Debug prints
         print(f"[DEBUG] Loaded {len(records)} records")
-        print(f"[DEBUG] Species found: {list(by_species.keys())}")
+        print(f"[DEBUG] Species found: {list(by_species.keys())[:5]} ...")
+        if records:
+            print(f"[DEBUG] Sample record: {records[0]}")
 
         return header, {'records': records, 'by_index': by_index, 'by_species': by_species}
 
