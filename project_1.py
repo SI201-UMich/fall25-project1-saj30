@@ -29,9 +29,10 @@ main()
       - records (list of dicts)
       - by_index (dict)
       - by_species (dict)
-  - count_by_species(records): Counts records by species
-  - count_by_island(records): Counts records by island
-  - summary_stats_by_species(records, numeric_columns): Computes summary stats for numeric columns
+  - analyze()
+      - count_by_species()
+      - count_by_island()
+      - summary_stats_by_species()
 """
 
 import csv
@@ -45,16 +46,12 @@ COLUMNS = [
 ]
 
 
-def get_header(filepath: str = DATAFILE) -> list[str]:
-    """Return the CSV header as a list of column names (normalized).
-
-    If the CSV has an initial unnamed index column, drop it.
-    """
-    with open(filepath, newline='') as f:
+def get_header(filepath=DATAFILE):
+    """Return the CSV header as a list of column names."""
+    with open(filepath, 'r') as f:
         reader = csv.reader(f)
         header = next(reader)
-    header = [h.strip('"') for h in header]
-    # Drop a leading empty/unnamed column if present
+    # Remove first column if it's empty or unnamed
     if header and (header[0] == '' or header[0].lower().startswith('unnamed')):
         header = header[1:]
     return header
@@ -100,16 +97,15 @@ def count_by_island(records):
     pass
 
 
-def summary_stats_by_species(records, numeric_columns=None):
-    """Compute summary statistics (mean, median, std, count) for numeric columns grouped by species.
 
-    Args:
-        records: list of dicts
-        numeric_columns: list of column names to summarize (defaults to numeric columns in COLUMNS)
-    Returns:
-        dict: {species: {col: {mean, median, std, count}}}
-    """
-    pass
+def analyze(records):
+    """Perform the main analyses: count by species and island."""
+    species_counts = count_by_species(records)
+    island_counts = count_by_island(records)
+    return {
+        'species_counts': species_counts,
+        'island_counts': island_counts
+    }
 
 
 def main() -> None:
