@@ -91,18 +91,11 @@ def load_data(filepath: str = DATAFILE):
 
             count += 1
 
-        # Debug prints
-        print(f"[DEBUG] Loaded {len(records)} records")
-        print(f"[DEBUG] Species found: {list(by_species.keys())[:5]} ...")
-        if records:
-            print(f"[DEBUG] Sample record: {records[0]}")
-
         return header, {'records': records, 'by_index': by_index, 'by_species': by_species}
 
 
 def avg_bill_length_by_species(records):
     """Compute average bill length (mm) grouped by species."""
-    print("[DEBUG] Starting avg_bill_length_by_species...")  # Debug start
     totals = {}
     counts = {}
 
@@ -120,17 +113,12 @@ def avg_bill_length_by_species(records):
         totals[sp] = totals.get(sp, 0) + bill_val
         counts[sp] = counts.get(sp, 0) + 1
 
-    print(f"[DEBUG] totals: {totals}")
-    print(f"[DEBUG] counts: {counts}")
-
     avgs = {sp: round(totals[sp] / counts[sp], 2) for sp in totals if counts[sp] > 0}
-    print(f"[DEBUG] avgs: {avgs}")
     return avgs
 
 
 def count_sex_by_species(records):
     """Count male and female records for each species."""
-    print("[DEBUG] Starting count_sex_by_species...")  # Debug start
     counts = {}
 
     for rec in records:
@@ -145,13 +133,11 @@ def count_sex_by_species(records):
         if sex in counts[sp]:
             counts[sp][sex] += 1
 
-    print(f"[DEBUG] counts: {counts}")
     return counts
 
 
 def analyze(records):
     """Perform analyses."""
-    print("[DEBUG] Running analyze()...")  # Debug start
     sex_species_counts = count_sex_by_species(records)
     avg_bill_length = avg_bill_length_by_species(records)
     return {
@@ -166,7 +152,6 @@ def main():
 
     if data and data['records']:
         records = data['records']
-        print("[DEBUG] Sample record:", records[0])  # See data format
 
         results = analyze(records)
         print("\nAnalysis Results ---\n")
