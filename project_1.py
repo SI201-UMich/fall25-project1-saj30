@@ -147,7 +147,6 @@ def analyze(records):
 
 
 def main():
-    print('\n--- Plan ---')
     header, data = load_data()
 
     if data and data['records']:
