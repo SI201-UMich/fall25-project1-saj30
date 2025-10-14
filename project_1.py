@@ -153,7 +153,7 @@ def main():
         records = data['records']
 
         results = analyze(records)
-        print("\nAnalysis Results ---\n")
+        print("\nAnalysis Results\n")
 
         print("Average Bill Length by Species:")
         for sp, avg in results['avg_bill_length_by_species'].items():
